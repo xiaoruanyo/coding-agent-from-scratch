@@ -1,0 +1,4 @@
+# 课程主要实践环境
+langgraph==1.2.11
+langchain-openai
+pytest
