@@ -60,20 +60,32 @@
 | [N11](N11-approval-gate.md) | interrupt、独立审批节点、恢复和拒绝 | 已有正文 |
 | [N12](N12-batch-tools.md) | 批量审批、多 Tool 配对、依赖与并行 | 已有正文 |
 
+### 卷三：可靠执行、真实仓库与产品衔接
+
+| 课号 | 主题 | 状态 |
+|---|---|---|
+| [N13](N13-checkpoint-recovery.md) | Checkpoint、thread_id、interrupt 恢复与重放副作用 | 已有正文 |
+| [N14](N14-workspace.md) | 受控工作区、局部读取、精确修改与 pytest 边界 | 已有正文 |
+| [N15](N15-reliability.md) | Retry、Loop、Recovery、sync_state 与完成条件 | 已有正文 |
+| [N16](N16-context-repo.md) | Working Summary、Context Builder、Repo Map 与过期上下文 | 已有正文 |
+| [N17](N17-fullstack-product.md) | FastAPI、React、SSE、Diff 审批与产品路线 | 已有正文 |
+
 [随课代码与离线测试](examples/README.md)
+
+[产品 M0：本地运行的 FastAPI + React + 真实 Diff 与 pytest 演示工程](../product/README.md)
 
 ### 后续卷：待编写详细正文
 
 这些是 **规划中的主题**，不是已经完成的教材：
 
-- **状态与持久化：** Checkpointer / thread_id、Memory、Command(resume)、中断恢复与幂等。
-- **Coding Agent 工具链：** workspace 边界、list/search/read、精确修改、pytest 执行、异常分类。
+- **状态与持久化深化：** 长期 Memory / Store、持久化 Checkpointer、恢复幂等与多会话授权。
+- **Coding Agent 工具链深化：** 更完整的 AST 搜索、内容版本核验、安全执行与工具错误矩阵。
 - **Graph 进阶：** Command、Subgraph、Parallel/Superstep/Send、RetryPolicy、Stream、Runner、Recovery。
 - **Harness 进阶：** Completion Guard、Tool Call Guard、跨步骤 Policy、事实一致性、状态最小化。
-- **Context Engineering 与 Repo 导航：** Working Summary、Context Builder、Repo Map、AST、关键词检索、RAG 取舍、过期信息。
-- **毕业项目：** 从零定义需求、State、Tools、Nodes、Edges、审批、测试、报告和验收。
+- **Context Engineering 深化：** Token 预算、摘要触发策略、代码依赖图和按需的语义检索。
+- **产品必修：** 把 M0 演示驱动器替换为 LangGraph + LLM，打通完整自主任务、审批恢复、真实测试与 React UI，再进行端到端验收。
 
-未来的详细正文继续从 N13 起编号，不会把计划主题写成虚假的已完成课。
+未来的详细正文将从 N18 起继续完善。已有内容与待写的内容严格分开，不能把课程规划标成“已完成”。
 
 > **编写状态是真实状态，不是学习进度。** 没有详细正文的课绝不写成“已完成”。原版课程里已经讲到的概念，不代表这个新版教材的正文已经写好了。
 
