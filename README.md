@@ -58,11 +58,11 @@ LangGraph：Chat / Approval / Tools / State / Guard
 
 ## 课程正文与代码
 
-- [已经编写的详细正文 N00～N12](textbook/README.md)：基础机制、Tool Calling、Graph、Reducer、Harness、审批与多工具执行。
+- [已经编写的详细正文 N00～N18](textbook/README.md)：基础机制、Tool Calling、Graph、Reducer、Harness、审批与多工具执行。
 - [随课最小实验](textbook/examples/README.md)：与正文对应的代码、单元测试。
 - [产品工程说明](docs/ARCHITECTURE.md)：前端／后端／Agent Core 的职责以及逐步完成路线。
 
-> **完成度说明（重要）**：现阶段是课程重建过程，N00～N12 有完整正文，其余部分按 [课程总导航](docs/INDEX.md) 标示“正在规划／待详细编写”。前端与后端是**必修终点**，不是已经实现并验证的成品。不要把教材的最终愿景当成当前仓库的功能声明。
+> **完成度说明（重要）**：现阶段是课程重建过程，N00～N18 有详细正文，其余部分按 [课程总导航](docs/INDEX.md) 标示“正在规划／待详细编写”。前端与后端是**必修终点**，不是已经实现并验证的成品。不要把教材的最终愿景当成当前仓库的功能声明。
 
 ## 为什么坚持“LLM 负责聪明，程序负责靠谱”？
 
