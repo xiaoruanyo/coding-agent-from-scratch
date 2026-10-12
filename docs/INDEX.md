@@ -40,11 +40,11 @@
 | Tool 结果同步 State | 测试输出怎样成为可靠的事实 | [N10 详细正文](../textbook/N10-sync-state.md) |
 | Human-in-the-loop | 谁负责审批、为什么副作用不能放在 interrupt 前 | [N11 详细正文](../textbook/N11-approval-gate.md) |
 | 多 Tool Calls | 整批审批、拒绝、依赖与并行如何处理 | [N12 详细正文](../textbook/N12-batch-tools.md) |
-| Checkpoint / thread_id | 中断后如何可靠恢复任务现场 | 待详细编写 |
+| Checkpoint / thread_id | 中断后如何可靠恢复任务现场 | [N13 详细正文](../textbook/N13-checkpoint-recovery.md) |
 | Memory 与 Checkpoint | 长期经验与当前执行现场有什么不同 | 待详细编写 |
 | Command / Router / Subgraph | 什么时候需要复杂路由与拆图 | 待详细编写 |
-| Retry / Loop / Recovery | 失败重试为什么不是一回事 | 待详细编写 |
-| Completion Guard | 模型说“完成了”为什么不能直接 END | 待详细编写 |
+| Retry / Loop / Recovery | 失败重试为什么不是一回事 | [N15 详细正文](../textbook/N15-reliability.md) |
+| Completion Guard | 模型说“完成了”为什么不能直接 END | [N15 同章详细解析](../textbook/N15-reliability.md) |
 | Stream / Runner | Graph 事件怎样暴露给 UI | 待详细编写 |
 
 这阶段的阶段性成果应该是**能解释一条编码任务的可靠执行链路**，而不仅是知道 `interrupt` 的语法。
@@ -53,13 +53,13 @@
 
 | 课程主题 | 产品落点 | 状态 |
 |---|---|---|
-| Workspace 边界、路径规范化 | 不能读写仓库之外 | 待详细编写 |
-| list_directory / search_code / read_file | 浏览器展示 Agent 的真实代码探索 | 待详细编写 |
-| replace_text / write_file | 可预览、可审批、可核验的文件修改 | 待详细编写 |
-| run_test 的执行安全与结果分类 | 真实测试面板、超时和失败处理 | 待详细编写 |
-| Context Builder / Working Summary | 长任务不无限增长消息上下文 | 待详细编写 |
-| Repo Map / Python AST / 搜索阶梯 | 在大型仓库中先导航、再定位、最后读取 | 待详细编写 |
-| 过期代码与验证失效 | 修改后必须重新观察和验证 | 待详细编写 |
+| Workspace 边界、路径规范化 | 不能读写仓库之外 | [N14 详细正文](../textbook/N14-workspace.md) |
+| list_directory / search_code / read_file | 浏览器展示 Agent 的真实代码探索 | [N14 详细正文](../textbook/N14-workspace.md) |
+| replace_text / write_file | 可预览、可审批、可核验的文件修改 | [N14 详细正文](../textbook/N14-workspace.md) |
+| run_test 的执行安全与结果分类 | 真实测试面板、超时和失败处理 | [N14～N15](../textbook/N15-reliability.md) |
+| Context Builder / Working Summary | 长任务不无限增长消息上下文 | [N16 详细正文](../textbook/N16-context-repo.md) |
+| Repo Map / Python AST / 搜索阶梯 | 在大型仓库中先导航、再定位、最后读取 | [N16 详细正文](../textbook/N16-context-repo.md) |
+| 过期代码与验证失效 | 修改后必须重新观察和验证 | [N16 详细正文](../textbook/N16-context-repo.md) |
 
 不把 “RAG/向量数据库”作为第一版的前置条件。关键词搜索、简单 Repo Map 和局部读取可以先完成可信的 V1。语义检索作为扩展课程，真实需求出现时再加入。
 
@@ -69,7 +69,7 @@
 
 | 课题 | 最终可见效果 | 状态 |
 |---|---|---|
-| 产品边界与前后端职责 | 能说清 Browser / FastAPI / Graph 的关系 | [产品契约](PRODUCT.md) |
+| 产品边界与前后端职责 | 能说清 Browser / FastAPI / Graph 的关系 | [N17 详细正文](../textbook/N17-fullstack-product.md) · [产品契约](PRODUCT.md) |
 | 后端任务 API / thread_id | 输入任务、建立任务、查询状态 | 待详细编写 |
 | 事件流 SSE / Runner | 前端看到逐步执行进度 | 待详细编写 |
 | React 任务输入与 Timeline | 有完整操作界面，而不是终端打印 | 待详细编写 |
@@ -77,6 +77,8 @@
 | 测试状态面板 | PASS / FAIL / TIMEOUT / ERROR 真实可见 | 待详细编写 |
 | Task 持久化与中断恢复 | 刷新页面或恢复任务不丢失重要现场 | 待详细编写 |
 | 前后端集成与故障注入 | 能对真实临时仓库完成端到端修复 | 待详细编写 |
+
+**可运行的第一条产品化演示链路：** [M0 全栈工程](../product/README.md)。M0 使用确定性驱动器验证真实文件、审批与测试，不应当误认为完整自主 Coding Agent。下一步必须接入 LangGraph + LLM，并完成持久化与安全验收。
 
 推荐技术：Python + FastAPI、LangGraph、React + TypeScript + Vite。选型并不构成架构理论的唯一答案；采用它们是为了让项目有清楚的学习路径。
 
