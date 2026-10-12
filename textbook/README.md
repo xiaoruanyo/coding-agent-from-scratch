@@ -1,11 +1,11 @@
-# 从零学习 LangGraph，最终亲手设计 Coding Agent
+# 从零理解 Agent，最终做出有前后端的 Mini Coding Agent
 
 > **详细教材版 · 正文逐课展开 · 中文优先**  
-> 本目录是新版教材。仓库根目录原有的 `docs/` 保留，继续作为旧版知识提纲；`CHEATSHEET.md` 保留作为查询手册。**教材不是速查表，速查表也不应该代替教材。**
+> 本目录是新版的逐课教材；`docs/` 现在保存产品契约、系统架构、写作规范与唯一课程总导航，旧版概览已经从主学习目录移走。`CHEATSHEET.md` 保留作为查询手册。**教材不是速查表，速查表也不应该代替教材。**
 
 ## 这套教材适合谁
 
-你可能已经写过程序，却没有系统学过 Agent；能够读懂 Python，但不希望先学习一整套 Python 语言课程；想理解 LangGraph 的 `State`、`Node`、`Edge`、`ToolNode`、`interrupt`、`Checkpoint`；最终希望能够**自己决定一个 Coding Agent 应该怎样设计**，而不是单纯复制一个现成项目。
+你可能已经写过程序，却没有系统学过 Agent；能够读懂 Python，但不希望先学习一整套 Python 语言课程；想理解 LangGraph 的 `State`、`Node`、`Edge`、`ToolNode`、`interrupt`、`Checkpoint`；最终希望能够**自己决定 Agent 的架构，并把它做成拥有 React 前端和 FastAPI 后端的完整本地产品**，而不是单纯复制现成项目。
 
 你不必一开始独立手写所有 Python 代码，可以用 AI 辅助写代码。但你应当能够解释代码为什么这样组织，发现安全边界、状态更新和流程设计中的问题。
 
