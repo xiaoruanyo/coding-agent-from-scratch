@@ -1,0 +1,6 @@
+# 教学环境：早期课程使用 LangGraph 1.2.11
+# 为严格复现，正式项目应额外锁定完整依赖树
+langgraph==1.2.11
+langchain-openai
+python-dotenv
+pytest
