@@ -1,0 +1,98 @@
+# 从零学习 LangGraph，最终亲手设计 Coding Agent
+
+> **详细教材版 · 正文逐课展开 · 中文优先**  
+> 本目录是新版教材。仓库根目录原有的 `docs/` 保留，继续作为旧版知识提纲；`CHEATSHEET.md` 保留作为查询手册。**教材不是速查表，速查表也不应该代替教材。**
+
+## 这套教材适合谁
+
+你可能已经写过程序，却没有系统学过 Agent；能够读懂 Python，但不希望先学习一整套 Python 语言课程；想理解 LangGraph 的 `State`、`Node`、`Edge`、`ToolNode`、`interrupt`、`Checkpoint`；最终希望能够**自己决定一个 Coding Agent 应该怎样设计**，而不是单纯复制一个现成项目。
+
+你不必一开始独立手写所有 Python 代码，可以用 AI 辅助写代码。但你应当能够解释代码为什么这样组织，发现安全边界、状态更新和流程设计中的问题。
+
+## 从头到尾，我们在做同一个项目
+
+```text
+第 1 阶段：让模型回答问题
+     ↓
+第 2 阶段：让模型提出 Tool Calls
+     ↓
+第 3 阶段：让程序执行工具，并把结果传回模型
+     ↓
+第 4 阶段：用 LangGraph 管理状态、分支和循环
+     ↓
+第 5 阶段：加入 Checkpoint、人工审批和失败处理
+     ↓
+第 6 阶段：提供搜索、有限读取、精确修改、测试工具
+     ↓
+第 7 阶段：完善 Harness、Context 和 Repo 导航
+     ↓
+毕业项目：从空目录设计 Coding Agent V1
+```
+
+我们要做的 Agent 接到“修复一个 Bug”的任务后，能够寻找相关代码、读取片段、提出修改、经过审批、修改文件、运行测试，并依据**真实结果**决定是否继续；不能因为 LLM 说“已经成功”就宣称测试通过。
+
+## 正文组织方式
+
+这是一个长期维护的教材，而不是把早期 75 课压缩成 13 个 Markdown 的版本。新的课号 `Nxx` 是**教材自己的课号**，不冒充原对话的逐字课号。原 1～75 课的主题可参考根目录 [COURSE_MAP](../COURSE_MAP.md)。
+
+**每一课至少考虑以下教学环节**：要解决的问题、直觉模型、概念精讲、最小代码、逐行解释、预期现象、常见错误、联系 Coding Agent 的设计取舍、理解检查。需要时增加反例和练习；不是为了凑格式，每课都强行给小作业。
+
+### 卷一：基础与最小图
+
+| 课号 | 主题 | 状态 |
+|---|---|---|
+| [N00](N00-study-method.md) | 学习路线、分层心智模型、如何练习与排错 | 已有正文 |
+| [N01](N01-environment.md) | Windows / PyCharm / Python / 环境变量 / API 连接 | 已有正文 |
+| [N02](N02-first-model.md) | 第一次调用 Chat Model，理解 invoke 与 AIMessage | 已有正文 |
+| N03 | Messages 与多轮对话：到底谁记住了历史 | 待详细编写 |
+| N04 | State、Node、Edge：写出第一张 Graph | 待详细编写 |
+| N05 | Conditional Edge、Loop、END：检查—重写循环 | 待详细编写 |
+| N06 | Reducer：为什么需要合并更新 | 待详细编写 |
+
+### 卷二：Tool Calling 与 Agent Loop
+
+N07 `@tool`；N08 `bind_tools` 与 `tool_calls`；N09 `ToolMessage` 与调用 ID；N10 `ToolNode`；N11 手写最小 Agent Loop；N12 多 Tool Calls 的依赖、并行与结果配对；N13 何时把机制从 Prompt 下沉到程序。
+
+### 卷三：状态、持久化与人工介入
+
+N14 Agent State 不只有 Messages；N15 结构化状态与 `sync_state`；N16 Checkpoint / thread_id；N17 Checkpoint 与 Memory 的区别；N18 `interrupt` / `Command(resume=...)`；N19 高风险 Tool 审批；N20 多 Tool Calls 批量审批；N21 中断后的重放、副作用与幂等。
+
+### 卷四：Coding Agent 工具链
+
+N22 Workspace 路径边界；N23 列目录 / 搜索代码；N24 限长读取；N25 精确文本替换；N26 写入与原子性；N27 pytest、超时、退出码；N28 正常失败与执行异常；N29 Tool / Node 边界与调用护栏。
+
+### 卷五：Graph 进阶与执行可靠性
+
+N30 `Command`；N31 Subgraph 与 State Channel；N32 Parallel / Superstep；N33 `Send` 与 Reducer；N34 RetryPolicy；N35 Retry、Loop、Recovery；N36 Stream 与 Runner；N37 最终报告；N38 Completion Guard；N39 有依赖调用的串行调度。
+
+### 卷六：Harness、Context 与大型仓库
+
+N40 Harness 到底是什么；N41 系统不变量与 Workflow Policy；N42 薄 Workflow；N43 状态不是日志；N44 意图不等于事实；N45 Context Builder；N46 Working Summary；N47 上下文过期与重新观察；N48 Repo Map；N49 Python AST；N50 检索阶梯与 RAG 的取舍。
+
+### 卷七：毕业项目
+
+N51 需求契约；N52 决定 State；N53 决定 Tools；N54 决定 Nodes；N55 设计 Edges；N56 审批策略；N57 Tool 结果同步；N58 测试失败三次的语义；N59 最终验证与汇报；N60 Runner / Stream；N61 测试与验收；N62 完成一次独立设计复盘。
+
+> **编写状态是真实状态，不是学习进度。** 没有详细正文的课绝不写成“已完成”。原版课程里已经讲到的概念，不代表这个新版教材的正文已经写好了。
+
+## 学习要求
+
+1. 先看解释，再运行代码，最后观察输出；不要看见 `invoke()` 就认为已经理解 `State` 更新。
+2. 出现报错先定位错误在哪一层：Python、API 请求、Tool schema、消息协议、Graph 路由、State 字段、外部环境。
+3. 对代码中的安全约束，不以一句“模型会注意的”作为保证。
+4. 不是每课都要做习题；关键章节要能**解释为什么这么设计**。
+5. 速查时使用 [CHEATSHEET](../CHEATSHEET.md)；学习时看完整教材正文。
+
+## 参考项目与版本说明
+
+本教材的历史实践环境包含 Windows、PyCharm、Python 3.13、`langgraph==1.2.11` 和通过兼容接口调用的 DeepSeek。第三方模型名可能变化；教程代码会尽量从环境变量读取模型名，避免把某个时间点的名称写死为永久有效。
+
+**教材代码并不是对所有 LangGraph / LangChain 版本的兼容保证。** 每课标注必要依赖；涉及 API 版本差异时优先以实际安装版本检查。未实测运行的示意代码会明确标注。
+
+## 内容来源与编辑原则
+
+这套教材以此前的学习对话、仓库既有 13 章概要及相关代码练习为主线，保留实际出现的困惑与错误（例如 `compile` 与 `compiled`、函数引用与函数调用、缺失 `check_count` 初值、多 Tool 的调用配对）。为了构建连续的教材，需要重新组织、补充解释和重写例子；**不把重新编写的段落假称为历史对话原文**。
+
+我们始终保持一句主线：
+
+> **LLM 负责聪明，程序负责靠谱。**
