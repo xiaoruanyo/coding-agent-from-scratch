@@ -17,3 +17,12 @@ venv/
 
 # Runtime sandbox artifacts
 coding-agent/sandbox/__pycache__/
+
+# Frontend
+node_modules/
+dist/
+*.tsbuildinfo
+
+# OS / local runtime
+.DS_Store
+product/backend/.coverage
