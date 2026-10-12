@@ -44,34 +44,36 @@
 | [N00](N00-study-method.md) | 学习路线、分层心智模型、如何练习与排错 | 已有正文 |
 | [N01](N01-environment.md) | Windows / PyCharm / Python / 环境变量 / API 连接 | 已有正文 |
 | [N02](N02-first-model.md) | 第一次调用 Chat Model，理解 invoke 与 AIMessage | 已有正文 |
-| N03 | Messages 与多轮对话：到底谁记住了历史 | 待详细编写 |
-| N04 | State、Node、Edge：写出第一张 Graph | 待详细编写 |
-| N05 | Conditional Edge、Loop、END：检查—重写循环 | 待详细编写 |
-| N06 | Reducer：为什么需要合并更新 | 待详细编写 |
+| [N03](N03-messages.md) | Messages 与多轮对话：到底谁记住了历史 | 已有正文 |
+| [N04](N04-first-graph.md) | State、Node、Edge：写出第一张 Graph | 已有正文 |
+| [N05](N05-conditional-loop.md) | Conditional Edge、Loop、END：检查—重写循环 | 已有正文 |
+| [N06](N06-reducer.md) | Reducer：为什么需要合并更新 | 已有正文 |
 
-### 卷二：Tool Calling 与 Agent Loop
+### 卷二：Tool Calling 与 Agent 工程入门
 
-N07 `@tool`；N08 `bind_tools` 与 `tool_calls`；N09 `ToolMessage` 与调用 ID；N10 `ToolNode`；N11 手写最小 Agent Loop；N12 多 Tool Calls 的依赖、并行与结果配对；N13 何时把机制从 Prompt 下沉到程序。
+| 课号 | 主题 | 状态 |
+|---|---|---|
+| [N07](N07-tool-calling.md) | @tool、bind_tools、Tool Calls、ToolMessage | 已有正文 |
+| [N08](N08-toolnode-loop.md) | ToolNode 与最小 Agent Loop | 已有正文 |
+| [N09](N09-harness-first.md) | Harness 的实际含义、薄 Workflow 和安全边界 | 已有正文 |
+| [N10](N10-sync-state.md) | 工具事实如何同步成 State；普通失败与 timeout | 已有正文 |
+| [N11](N11-approval-gate.md) | interrupt、独立审批节点、恢复和拒绝 | 已有正文 |
+| [N12](N12-batch-tools.md) | 批量审批、多 Tool 配对、依赖与并行 | 已有正文 |
 
-### 卷三：状态、持久化与人工介入
+[随课代码与离线测试](examples/README.md)
 
-N14 Agent State 不只有 Messages；N15 结构化状态与 `sync_state`；N16 Checkpoint / thread_id；N17 Checkpoint 与 Memory 的区别；N18 `interrupt` / `Command(resume=...)`；N19 高风险 Tool 审批；N20 多 Tool Calls 批量审批；N21 中断后的重放、副作用与幂等。
+### 后续卷：待编写详细正文
 
-### 卷四：Coding Agent 工具链
+这些是 **规划中的主题**，不是已经完成的教材：
 
-N22 Workspace 路径边界；N23 列目录 / 搜索代码；N24 限长读取；N25 精确文本替换；N26 写入与原子性；N27 pytest、超时、退出码；N28 正常失败与执行异常；N29 Tool / Node 边界与调用护栏。
+- **状态与持久化：** Checkpointer / thread_id、Memory、Command(resume)、中断恢复与幂等。
+- **Coding Agent 工具链：** workspace 边界、list/search/read、精确修改、pytest 执行、异常分类。
+- **Graph 进阶：** Command、Subgraph、Parallel/Superstep/Send、RetryPolicy、Stream、Runner、Recovery。
+- **Harness 进阶：** Completion Guard、Tool Call Guard、跨步骤 Policy、事实一致性、状态最小化。
+- **Context Engineering 与 Repo 导航：** Working Summary、Context Builder、Repo Map、AST、关键词检索、RAG 取舍、过期信息。
+- **毕业项目：** 从零定义需求、State、Tools、Nodes、Edges、审批、测试、报告和验收。
 
-### 卷五：Graph 进阶与执行可靠性
-
-N30 `Command`；N31 Subgraph 与 State Channel；N32 Parallel / Superstep；N33 `Send` 与 Reducer；N34 RetryPolicy；N35 Retry、Loop、Recovery；N36 Stream 与 Runner；N37 最终报告；N38 Completion Guard；N39 有依赖调用的串行调度。
-
-### 卷六：Harness、Context 与大型仓库
-
-N40 Harness 到底是什么；N41 系统不变量与 Workflow Policy；N42 薄 Workflow；N43 状态不是日志；N44 意图不等于事实；N45 Context Builder；N46 Working Summary；N47 上下文过期与重新观察；N48 Repo Map；N49 Python AST；N50 检索阶梯与 RAG 的取舍。
-
-### 卷七：毕业项目
-
-N51 需求契约；N52 决定 State；N53 决定 Tools；N54 决定 Nodes；N55 设计 Edges；N56 审批策略；N57 Tool 结果同步；N58 测试失败三次的语义；N59 最终验证与汇报；N60 Runner / Stream；N61 测试与验收；N62 完成一次独立设计复盘。
+未来的详细正文继续从 N13 起编号，不会把计划主题写成虚假的已完成课。
 
 > **编写状态是真实状态，不是学习进度。** 没有详细正文的课绝不写成“已完成”。原版课程里已经讲到的概念，不代表这个新版教材的正文已经写好了。
 
