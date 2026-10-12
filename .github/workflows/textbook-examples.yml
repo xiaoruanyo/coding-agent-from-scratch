@@ -1,0 +1,36 @@
+name: Textbook examples (offline)
+
+on:
+  pull_request:
+    paths:
+      - "textbook/**"
+      - ".github/workflows/textbook-examples.yml"
+  push:
+    paths:
+      - "textbook/**"
+      - ".github/workflows/textbook-examples.yml"
+
+jobs:
+  verify-offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install course dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r textbook/examples/requirements.txt
+      - name: Syntax check
+        run: python -m compileall -q textbook/examples
+      - name: Offline Graph exercises
+        run: |
+          python textbook/examples/01_first_graph.py
+          python textbook/examples/02_conditional_loop.py
+          python textbook/examples/03_reducer.py
+      - name: Pure function and policy tests
+        run: python -m pytest textbook/examples/test_sync_result.py -q
+
+# External LLM calls are deliberately not part of CI:
+# they need user secrets, network access, and may cost money.

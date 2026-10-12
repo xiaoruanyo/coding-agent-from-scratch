@@ -1,90 +1,35 @@
-# 后续路线
+# 课程与产品后续路线（唯一入口见 docs/INDEX.md）
 
-## 当前阶段：Coding Agent Core 收口
+> 该文件保留旧仓库链接兼容性，当前权威进度以 [中文课程总导航](docs/INDEX.md) 为准。
 
-接下来重点不是继续无限增加新概念，而是把已有知识组合成一个完整 Agent。
+## 已具备的素材与工程
 
-```text
-Repo Context
-↓
-Context 策略
-↓
-完整 V1 架构设计
-↓
-从空目录完成毕业项目
-↓
-工程化拆分
-```
+- 详细中文正文 N00～N18：包括 Agent 基础、LangGraph、Tool Calling、HITL、可靠性、Context、产品化设计。
+- 随课离线实验与必要的状态同步测试。
+- 产品 M0：FastAPI + React + 真实文件 Diff、审批、pytest 与 SSE 的确定性教学原型。它**还不是通用的自主 Coding Agent**。
 
-## 毕业项目
+## 下一步必修里程碑
 
-毕业项目采用“分级提示”方式。
+**M1：LLM 驱动的 LangGraph Agent Core。**
 
-第一阶段只提供：
+把固定演示驱动器替换为真正的模型决策与受控 Tool Calling，使其能够针对未知任务搜索和读取代码、形成提案。M1 不能因此取消文件写入前审批。
 
-- 需求；
-- 可使用的知识点；
-- 验收标准。
+**M2：可靠 Harness 与真实任务状态。**
 
-如果卡住，可以逐级获得提示：
+实现多 Tool Calls 的 ID 完整配对、独立审批节点、sync_state、Completion Guard、普通测试失败预算、超时/错误区分。
 
-```text
-一级提示
-→ 只提醒思考方向
+**M3：Task Store / Checkpoint 持久化与恢复。**
 
-二级提示
-→ 提醒应该使用哪类机制
+后端重启之后仍能恢复待审批任务；事件流重连、任务取消、重复审批、用户拒绝应拥有正确状态语义。
 
-三级提示
-→ 给局部伪代码
+**M4：Repo Context 与长任务。**
 
-仍然解决不了
-→ 一起完成实现
-```
+关键词搜索、Python AST Repo Map、有限读取、Working Summary、版本失效核验与 Token 预算。
 
-目标是自己决定：
+**M5：完整产品验收。**
 
-- State 放什么；
-- Tool 有哪些；
-- Node 怎么拆；
-- Graph 有哪些硬规则；
-- Runner / UI 负责什么。
+运行 [全链路验收清单](docs/DEFINITION-OF-DONE.md) 后，才能称其为 Mini Coding Agent V1。
 
-## Core 完成后的扩展
+## 独立的高级扩展课程
 
-### LangChain 高层能力
-
-在已经亲手理解 Agent Loop 和 Harness 后，再学习高层 Agent 封装，重点理解“框架替我们做了什么”。
-
-### 工程化拆分
-
-```text
-agent/
-├── state.py
-├── tools.py
-├── nodes.py
-├── routes.py
-├── graph.py
-└── prompts.py
-
-runtime/
-└── runner.py
-
-main.py
-```
-
-### 产品化
-
-```text
-Coding Agent Core
-↓
-FastAPI
-↓
-React + Vite
-↓
-Stream / Diff / Approve / Test Status
-↓
-Mini Codex 风格 UI
-```
-
-前端作为扩展篇，不把主课程变成完整前端课。
+多 Agent、语义 RAG、Docker/OS 隔离、Git 工作流、MCP/Skills、桌面打包、成本/Token 可观测性、多用户远程部署等，是 **V1 完成之后** 可以选择的高级专题。前后端 UI **不是选修扩展**。
