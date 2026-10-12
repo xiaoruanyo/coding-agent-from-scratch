@@ -4,7 +4,7 @@
 
 ## 已具备的素材与工程
 
-- 详细中文正文 N00～N17：包括 Agent 基础、LangGraph、Tool Calling、HITL、可靠性、Context、产品化设计。
+- 详细中文正文 N00～N18：包括 Agent 基础、LangGraph、Tool Calling、HITL、可靠性、Context、产品化设计。
 - 随课离线实验与必要的状态同步测试。
 - 产品 M0：FastAPI + React + 真实文件 Diff、审批、pytest 与 SSE 的确定性教学原型。它**还不是通用的自主 Coding Agent**。
 
