@@ -1,153 +1,94 @@
-# 从零开始构建 Coding Agent
+# 从零构建 Mini Coding Agent
 
-> 用一个持续演进的 Coding Agent，系统学习 LangChain、LangGraph、Tool Calling、State、Checkpoint、Memory、Human-in-the-loop、Agent Harness、Context Engineering 与代码检索。
+> **一本面向 Agent 零基础程序员的中文实战教材。**  
+> 从 LLM、Tool Calling 和 LangGraph 的基本原理出发，最终在本地完成一个拥有 **Python 后端、React 前端、代码检索、文件修改审批、测试执行与任务过程展示** 的小型 Coding Agent 产品。
 
-这不是一份只讲 API 的 LangGraph 笔记。
+**这不是“学完框架后顺手交个大作业”，而是以完整产品为目标，反过来设计每一步学习。**
 
-这套教程的主线始终只有一个：
+## 先看最终要做成什么
 
-> **从最小的 LLM 调用开始，一步一步做出一个真正可运行、可控制、可恢复、可扩展的 Coding Agent。**
+完成必修路线后，用户应能在浏览器里：
 
-课程优先使用中文。专业英文术语第一次出现时会同时给出中文解释，目标是理解概念，而不是背英文。
-
----
-
-## 📚 正式详细教材（新版）
-
-> **建议从这里开始学习：** [逐课详细教材 · N00～N12](textbook/README.md)。包含完整解释、错误剖析、架构取舍、可运行代码和离线测试。
->
-> 下方原有 00～13 章为旧版**知识概览/复习提纲**，目前予以保留，不把它们冒充展开后的正文。新版后续章节将按实际完成情况逐步增加。
-
----
-
-## 最终要做出的 Agent
+1. 打开本地 Mini Coding Agent，看到当前受控工作区。
+2. 输入“帮我修复 calculate_total 函数并运行测试”。
+3. 实时看到 Agent 搜索、读取、分析和调用工具的过程。
+4. 在修改代码之前看到具体 Diff，明确批准或拒绝这一次修改。
+5. 查看真实执行结果；测试失败时看到错误和下一次处理，不能凭模型一句话伪造“通过”。
+6. 在任务结束时看到修改文件、测试证据与明确的成功／失败／未验证状态。
 
 ```text
-用户提出代码任务
-        ↓
-Agent 理解任务
-        ↓
-浏览 / 搜索 / 读取 Repo
-        ↓
-分析问题并决定修改方案
-        ↓
-高风险写操作人工审批
-        ↓
-真正修改代码
-        ↓
-运行测试
-        ↓
-  ┌─────┴─────┐
-  ↓           ↓
-通过        失败 / 异常
-  ↓           ↓
-最终报告   修复 / Retry / Recovery
-              ↓
-             再验证
+浏览器：React / TypeScript / Vite
+            │
+       HTTP + 事件流
+            │
+Python：FastAPI / Runner / 任务管理
+            │
+LangGraph：Chat / Approval / Tools / State / Guard
+            │
+受控工作区：代码检索、最小修改、pytest
 ```
 
-最终核心能力包括：
+**本地优先**：从单用户、本机项目开始，不先引入云部署、登录系统或付费基础设施。完整产品并不等于无限功能；边界清晰、从界面到真实执行形成闭环才是重点。
 
-- LLM 与 Messages
-- Tool Calling / ToolNode
-- State / Reducer
-- Conditional Edge / Loop
-- Checkpoint / Memory
-- Human-in-the-loop
-- 文件搜索、局部读取与最小修改
-- Retry / Loop / Recovery
-- Stream / Runner
-- Completion Guard / Tool Call Guard
-- Working Summary / Context Builder
-- Repo Map / AST / 分层代码检索
-- 一个完整的 Coding Agent Core
+## 按这条路线学习
 
----
+| 阶段 | 学什么 | 阶段性成果 |
+|---|---|---|
+| [0. 产品导览](docs/PRODUCT.md) | 先看我们最终要交付什么，怎样验收 | 建立产品全貌 |
+| [1. Agent 原理](textbook/README.md) | LLM、Messages、Tool Calling、LangGraph、Reducer、Agent Loop | 可解释最小 Agent 内部流程 |
+| [2. 可靠执行与 Harness](docs/INDEX.md#第二阶段可靠-agent-与-harness) | State 事实、Checkpoint、审批、Retry、完成条件、工具边界 | 安全可控的核心执行器 |
+| [3. Coding Agent 工程能力](docs/INDEX.md#第三阶段仓库与上下文工程) | 文件检索、Repo Map、Context、精确修改、测试 | 真正处理代码工作区 |
+| [4. 前后端产品化](docs/INDEX.md#第四阶段从-agent-core-到完整产品) | FastAPI、React、事件流、Diff、任务状态、集成测试 | 浏览器里操作 Mini Coding Agent |
+| [5. 独立验收与扩展](docs/INDEX.md#第五阶段产品验收与进阶扩展) | 端到端测试、故障注入、工程打磨 | 一款可演示、可继续迭代的小产品 |
 
-## 核心设计原则
+**详细目录：** [中文课程总导航](docs/INDEX.md) · [最终产品需求与边界](docs/PRODUCT.md) · [系统架构](docs/ARCHITECTURE.md) · [质量与验收标准](docs/DEFINITION-OF-DONE.md) · [写作与代码规范](docs/EDITORIAL.md)
 
-贯穿整套课程的几句话：
+## 这本书怎样讲课？
 
-> **LLM 负责聪明，程序负责靠谱。**
+采用 **系统性技术教材 + 对话式新手教学**：
 
-> **能用确定代码判断的，就不要交给 LLM 猜。**
+- 先问一个真实的问题，再解释为什么需要这个机制。
+- 先用离线最小示例讲透原理，再放回 Coding Agent 的真实情境。
+- 重要 API 给出可以运行的完整脚本，并逐步拆解输入、状态、输出与错误。
+- 不把示意性伪代码冒充可运行实现。
+- 保留真实学习中容易困惑的提问，例如“为什么条件在 Edge 上”“Reducer 为什么存在”“Tool vs Node”“Checkpoint vs Memory”“Harness 到底是什么”。
+- 遇到错误不跳过，也不要求为了凑课时每个小节都做练习。
 
-> **模型越强，Workflow 应该越薄；但安全边界和系统不变量不能因为模型变强而消失。**
+**读者预备知识：** 能看懂基本 Python 和程序执行流程；不要求 Agent 基础，也不单独开设完整 Python 语法课程。主课程以 Python 为主；React、TypeScript 在产品阶段只讲项目真正需要的部分。
 
-> **LLM 负责表达意图，Tool 负责产生事实，State 负责保存事实，Graph 根据事实执行规则。**
+## 课程正文与代码
 
-> **Context 不是越多越好，而是越相关越好。**
+- [已经编写的详细正文 N00～N12](textbook/README.md)：基础机制、Tool Calling、Graph、Reducer、Harness、审批与多工具执行。
+- [随课最小实验](textbook/examples/README.md)：与正文对应的代码、单元测试。
+- [产品工程说明](docs/ARCHITECTURE.md)：前端／后端／Agent Core 的职责以及逐步完成路线。
 
----
+> **完成度说明（重要）**：现阶段是课程重建过程，N00～N12 有完整正文，其余部分按 [课程总导航](docs/INDEX.md) 标示“正在规划／待详细编写”。前端与后端是**必修终点**，不是已经实现并验证的成品。不要把教材的最终愿景当成当前仓库的功能声明。
 
-## 课程目录
+## 为什么坚持“LLM 负责聪明，程序负责靠谱”？
 
-| 章节 | 内容 |
-|---|---|
-| [00. 学习路线](docs/00-course-guide.md) | 学习方式、环境、课程主线 |
-| [01. LangChain 最小基础](docs/01-langchain-basics.md) | LLM、Messages、多轮对话 |
-| [02. LangGraph 基础](docs/02-langgraph-basics.md) | State、Node、Edge、Loop、Reducer |
-| [03. Tool Calling 与 Agent Loop](docs/03-tool-calling.md) | @tool、bind_tools、ToolNode、多 Tool |
-| [04. State、Checkpoint 与 Memory](docs/04-state-checkpoint-memory.md) | 结构化状态、持久化、长期记忆 |
-| [05. Human-in-the-loop](docs/05-human-in-the-loop.md) | interrupt、Command、人工审批 |
-| [06. Coding Agent 工具链](docs/06-coding-tools.md) | sandbox、search、bounded read、replace_text |
-| [07. Graph 进阶](docs/07-graph-advanced.md) | Command、Subgraph、Parallel、Send |
-| [08. 可靠执行](docs/08-reliability-runtime.md) | RetryPolicy、Stream、Runner、Recovery |
-| [09. Agent Harness](docs/09-agent-harness.md) | Completion Guard、Tool Call Guard、薄 Workflow |
-| [10. State 设计与事实模型](docs/10-state-and-facts.md) | 意图 vs 事实、State 最小化 |
-| [11. Context Engineering](docs/11-context-engineering.md) | Summary、Memory、Context Builder、过期上下文 |
-| [12. Repo Context](docs/12-repo-context.md) | Repo Map、AST、RAG、渐进式展开 |
-| [13. Coding Agent V1 架构](docs/13-coding-agent-v1.md) | 把全部知识收口成完整 Agent |
-| [课程课号映射](COURSE_MAP.md) | 原 1～75 课对应到新的章节 |
-| [速查笔记](CHEATSHEET.md) | API、概念、架构原则快速查询 |
-| [后续路线](ROADMAP.md) | 毕业项目、工程化、FastAPI / React 扩展 |
-
----
-
-## 推荐学习方式
-
-每章建议按这个顺序：
+模型可以决定搜索什么、读哪个文件、怎么修 Bug；但 **工具调用的真实结果、文件权限、用户审批、重试次数、代码验证状态** 要由程序可靠维护。
 
 ```text
-先理解为什么
-↓
-看最小代码
-↓
-自己运行
-↓
-观察真实输出
-↓
-出现错误先解决
-↓
-再进入下一节
+LLM 提出意图 → Tool 在边界内执行 → 产生可核验的结果
+                             ↓
+                         sync_state
+                             ↓
+                   Graph 根据事实做规则判断
 ```
 
-不要求为了学习而手敲所有代码。可以使用 AI / IDE 辅助编码，但需要能够：
+即使更换更强模型，硬边界也不能被一条 Prompt 替代。
 
-- 看懂 Agent 的关键结构；
-- 判断 LLM / Tool / State / Graph / Runner 的职责；
-- 发现架构设计不合理的地方；
-- 给 AI 明确的修改要求；
-- 最终从空目录设计出自己的 Coding Agent。
+## 项目状态与贡献
 
----
+本仓库的旧版 `docs/00～13` 是前期学习过程中形成的知识提纲；新版教材正文优先放在 `textbook/`，新的课程体系、产品契约和验收标准放在 `docs/` 的顶层导航中。旧版内容暂留作为历史参考，正式整合时会迁移或归档，**不会要求读者同时沿两套旧目录学习**。
 
-## 实践环境
+所有提交必须区分：
 
-本教程形成过程中的主要实践环境：
+- 已写完并审校的正文；
+- 已经在指定环境运行过的代码；
+- 仅说明架构的示意代码；
+- 仅计划实现的产品能力。
 
-```text
-Python 3.13
-LangGraph 1.2.11
-langchain_openai.ChatOpenAI
-DeepSeek API
-pytest
-```
+不上传 API 密钥；不在非受控工作区执行 LLM 生成的任意 Shell。
 
-示例以 Python 为主，但课程重点是 Agent 架构，不是 Python 语法课程。
-
----
-
-## License
-
-MIT License
+MIT License。
