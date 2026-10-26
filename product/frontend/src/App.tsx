@@ -27,6 +27,17 @@ const STATUS: Record<Status, string> = {
 };
 const TERMINAL: Status[] = ["SUCCEEDED", "FAILED", "REJECTED", "UNVERIFIED"];
 
+type Filter = "ALL" | Status;
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: "ALL", label: "全部" },
+  { value: "WAITING_APPROVAL", label: "等待审批" },
+  { value: "RUNNING", label: "执行中" },
+  { value: "SUCCEEDED", label: "成功" },
+  { value: "FAILED", label: "失败" },
+  { value: "REJECTED", label: "已拒绝" },
+  { value: "UNVERIFIED", label: "未验证" }
+];
+
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const result = await fetch(url, {
     ...init,
@@ -59,11 +70,13 @@ export default function App() {
   const [instruction, setInstruction] = useState("请修复计算函数的 Bug，先让我审批修改，再运行测试。");
   const [health, setHealth] = useState<Health | null>(null);
   const [history, setHistory] = useState<Summary[]>([]);
+  const [filter, setFilter] = useState<Filter>("ALL");
   const [task, setTask] = useState<Task | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const currentId = task?.task_id ?? "";
+  const visibleHistory = filter === "ALL" ? history : history.filter((item) => item.status === filter);
 
   async function refreshHistory() {
     setHistory(await api<Summary[]>("/api/tasks"));
@@ -167,10 +180,22 @@ export default function App() {
             <small title={health?.workspace}>{health?.workspace ?? "正在连接后端..."}</small>
           </div>
         </div>
-        <div className="side-heading history-heading">任务历史 <span>{history.length}</span></div>
+        <div className="side-heading history-heading">任务历史 <span>{filter === "ALL" ? history.length : `${visibleHistory.length}/${history.length}`}</span></div>
+        <div className="history-filters" role="group" aria-label="按状态筛选任务">
+          {FILTERS.map((item) => (
+            <button
+              className={"filter-chip " + (filter === item.value ? "selected" : "")}
+              key={item.value}
+              aria-pressed={filter === item.value}
+              onClick={() => setFilter(item.value)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
         <div className="history">
-          {history.length === 0 && <p className="empty-small">暂无任务记录</p>}
-          {history.map((item) => (
+          {visibleHistory.length === 0 && <p className="empty-small">{history.length === 0 ? "暂无任务记录" : "没有符合条件的任务"}</p>}
+          {visibleHistory.map((item) => (
             <button
               className={"history-item " + (currentId === item.task_id ? "selected" : "")}
               key={item.task_id}

@@ -40,6 +40,13 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid #94afff; outli
 .folder-icon { color: #9ab1fa; font-size: 19px; }
 .history-heading { display: flex; justify-content: space-between; margin-top: 20px; }
 .history-heading span { color: #61728b; font-size: 11px; }
+.history-filters { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 10px 8px; }
+.filter-chip {
+  background: transparent; border: 1px solid #2d354a; color: #8b98af;
+  font-size: 10px; line-height: 1; padding: 5px 8px; border-radius: 30px;
+}
+.filter-chip:hover { background: #202b3c; color: #e1e6f1; }
+.filter-chip.selected { background: #242f4b; border-color: #344c82; color: #dbe5ff; }
 .history { flex: 1; overflow-y: auto; }
 .history-item {
   width: 100%; text-align: left; background: transparent; border: 1px solid transparent;
@@ -135,7 +142,7 @@ footer { margin-top: 26px; color: #71829b; text-align: center; font-size: 11px; 
   .shell { display: block; }
   .sidebar { border-right: 0; border-bottom: 1px solid #303a52; padding: 13px; }
   .brand { padding: 2px 0 14px; }
-  .workspace, .history-heading, .history, .sidebar-footer, .side-heading { display: none; }
+  .workspace, .history-heading, .history-filters, .history, .sidebar-footer, .side-heading { display: none; }
   .content { padding: 22px 15px; }
   .page-header { display: block; }
   .online { display: inline-flex; margin-top: 15px; }
