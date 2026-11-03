@@ -1,6 +1,6 @@
 # Harness 实战课：Tool Calling 的真实执行链路与任务提示词设计
 
-> 课程状态：**已编写教学内容，尚未完成本节产品开发与验收**。课程编号以当前互动课堂为准，不等于教材 Nxx。
+> 课程状态（2026-11-03）：**Trae 已报告完成 M2 只读 Tool Calling 实现，33 个后端测试通过、前端构建和浏览器 Mock 通过；真实 DeepSeek Tool Calling 尚未验收。** 本文后半部保留最初任务契约及事后复盘。课程编号以当前互动课堂为准，不等于教材 Nxx。
 >
 > 目标：在 Mini Coding Agent 横向工作台中，看见真实的「模型请求工具 → Harness 校验 → 工具执行 → 模型根据工具结果分析」。学习重点是**职责分工、执行证据、任务提示词与验证**，不是记忆 FastAPI / React API。
 
@@ -127,3 +127,62 @@ Harness：允许这个 tool 和 path 吗？
 - 可观测性与 Evals（任务成功率、安全性、耗时和费用）
 
 每完成一节，都应在实际产品里增加一项**能够观察与验证的 Harness 机制**。
+
+## 6. 第 12 课实战复盘（根据 Trae 上传报告，2026-11-03）
+
+**证据等级**：以下内容来自本地 Trae 执行日志与最终报告，未直接审查用户电脑上的全部最终源码，也未代表已经真实调用 DeepSeek。不要将 Mock 测试等同真实模型验收。
+
+### 实际交付
+
+- 新增后端 `tools.py`（read_file schema、Harness 路径与输入校验、文件读取）与 `tool_agent.py`（一次 `LLM → Tool → LLM`）。
+- `main.py` 新增 `POST /api/llm/read-file`；原 `llm.py` 复用模型构建与文本提取。
+- React 新增「AI 查看代码」入口及「代码查看」Tab，显示模型请求、Harness 判定、工具执行结果和最终模型回答。
+- Harness 报告的边界：仅允许 read_file；拒绝多个调用、非法参数、缺少 call_id、绝对/盘符/UNC、`..`、符号链接逃逸；文件 UTF-8 且不超过 16KB。
+- 报告的本地测试：后端 **33 passed**（18 原有 + 15 新增），前端 `npm run build` 成功；1920×1080 和 1366×768 视口模拟下，工具记录可内部滚动。
+- 真实后端 `/api/health` 200，`/api/llm/read-file` 空白 422；**没有做真实 DeepSeek Tool Calling**。
+
+### 我们在课堂上需要重点理解的边界
+
+1. `AIMessage.tool_calls` 是**请求证据**，不是实际执行证据。
+2. `harness.decision=ALLOWED` 是授权判定，仍不等于文件读取成功。需要核对真实 Tool 结果。
+3. `ToolMessage.tool_call_id` 必须匹配对应请求；模型最终文字不应代替实际文件读取事实。
+4. 对拒绝的调用，程序可选择**明确中止并返回拒绝状态**，不必假装第二次模型调用已发生。UI 第四阶段应明确显示“未产生最终回答”。
+5. 只读工具不能只依赖 Prompt 保证；路径、文件类型、大小和符号链接必须在执行边界验证。
+6. Mock 是为了验证 UI 和代码分支；真实模型如何选工具存在不确定性，验收时应检查具体 trace，而非只检查 HTTP 200。
+
+### 发现的待改进问题
+
+浏览器验证曾观察到**Mock 因果不一致**：路径穿越或不存在的文件场景里，第一阶段仍显示 `{"path":"calculator.py"}` 和 `call_mock_1`，而后续错误又对应 `../secret.txt` 或 `missing.py`。这不证明生产工具越权，但会误导学习者对原请求/校验/执行链路的理解。
+
+**改进任务 Prompt（建议本节验收后单独完成）**：
+
+```text
+请检查 Tool Calling 浏览器 Mock 脚本与代码查看 Trace。
+目前越界/不存在文件场景中，tool_call.path 固定显示 calculator.py，
+而 Harness/Tool 结果显示了另一个路径。请先定位是 Mock 数据不一致
+还是生产接口组装错误；只修改确认有问题的部分。
+确保每个测试场景的 tool_call、Harness 判定、Tool 结果一一对应，
+并补充断言；不要伪造执行成功或把拒绝显示成模型最终回答。
+完成后报告实际测试结果与仍未验证的真实 DeepSeek 路径。
+```
+
+### 真实模型最终验收步骤
+
+在确认服务端 Key 可读且后端正在运行的情况下，只进行**一次**手动调用：
+
+```http
+POST /api/llm/read-file
+Content-Type: application/json
+
+{"instruction":"请先调用 read_file 读取 calculator.py，再依据实际内容说明函数在做什么；不要猜测。"}
+```
+
+按顺序检查返回：
+
+- `tool_call.name == "read_file"`，`tool_call.args.path` 指向允许工作区内的教学文件；
+- `harness.decision == "ALLOWED"`；
+- `file` 反映文件**实际成功读取**；对照当前教学文件内容；
+- `final_answer` 与读取的代码一致，前端展示同一事实链；
+- 若模型没有请求工具，显示 `NOT_REQUESTED` 不能冒充实际文件读取。
+
+**下一课衔接**：从一次有限的 LLM → Tool → LLM，升级为有最大步数、工具边界、状态记录的 LangGraph Agent Loop，并继续观察真实事件。
