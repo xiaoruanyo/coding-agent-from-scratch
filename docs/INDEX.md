@@ -5,9 +5,9 @@
 
 ## 当前互动课程重点（2026-11-03 调整）
 
-当前互动课程在现有 Mini Coding Agent 产品上，优先学习 **Agent 架构与 Harness、Hermes Agent 架构与扩展、AI 编程提示词工程**。React / FastAPI 是支撑可见产品的辅助知识，不另开大规模前后端系列课程。
+当前互动课程在现有 Mini Coding Agent 产品上，优先学习 **Agent 架构、Harness 工程、AI 编程提示词工程与评测**。React / FastAPI 是支撑可见产品的辅助知识，不另开大规模前后端系列课程。
 
-**正式的提示词工程详细笔记与 Hermes 学习规划**：[AI 编程提示词与 Agent 工程协作](AI_PROMPT_ENGINEERING_NOTES.md)。其中保留任务契约、功能开发 / Bug 修复 / 架构分析提示词、Rule / Skill / Harness 分工、证据驱动审查及 Hermes 专题路线。已验证与待学习内容分开标注。
+**正式的提示词工程详细笔记与 Harness 学习规划**：[AI 编程提示词与 Agent 工程协作](AI_PROMPT_ENGINEERING_NOTES.md)。其中保留任务契约、功能开发 / Bug 修复 / 架构分析提示词、Rule / Skill / Harness 分工、证据驱动审查及 Harness 工程专题路线。已验证与待学习内容分开标注。
 
 > 注意：这反映用户当前的互动学习方向，不改写下方既有教材 N00～N18 的正文编写状态；互动课编号也不等同于 Nxx 教材编号。
 
