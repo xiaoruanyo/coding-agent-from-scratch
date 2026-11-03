@@ -254,3 +254,40 @@ Guard / Scheduler：检查是否可以继续、重试、审批或结束
 - 已完成实战的主题可标注“已验证”；尚未运行的工具协议、Harness 扩展只标“待实践”。
 - **详细说明、反例和提示词模板**保留在此文件；`CHEATSHEET.md` 只保留短定义、关键 API 和架构判据。
 - 每完成一个核心实战，新增：业务目标、实际 Prompt、Agent 做出的技术决策、证据与误区、适用范围。
+
+
+## 9. 核心代码亲手写：教学方式调整（2026-11-03）
+
+用户要求：**不能始终直接复制给 Trae 的完整开发提示词；LangGraph 和 Harness 的核心代码需要亲自实现。**
+
+### 任务分工
+
+| 负责者 | 重点 |
+| --- | --- |
+| 学习者亲手实现 | State、Node、Edge、条件路由、Agent Loop、ToolNode 核心消息链路、审批与恢复、关键 Guard |
+| Trae 辅助实现 | React/CSS、FastAPI 接口胶水、工程脚手架、构建、浏览器验证、覆盖性测试 |
+| 老师负责讲解与审查 | 为什么需要该机制；代码应放在哪一层；提示式引导、复盘与反例；对 Trae 报告做证据分级 |
+| AI 辅助但不替写答案 | 查阅实际 API 文档、解释报错、提示某行问题、审查安全边界 |
+
+### 第 13 课：离线手写 LangGraph Loop
+
+第一步只在独立学习文件里搭一个最小循环，**不接真实 LLM、Key、ToolNode 或生产项目**。由老师提供少量骨架，学习者亲手补全路由和图的连接：
+
+1. 定义 State 中 `rounds`、`max_rounds`、`tool_requested` 与 `trace`。
+2. 模拟 `llm` 节点输出是否想执行工具（意图）。
+3. 模拟 `tools` 节点更新次数和执行记录（事实）。
+4. 亲手补齐 `route_after_llm`：先检查 Harness 次数限制，再决定是否进入工具或 END。
+5. 添加 `START → llm`、`llm → conditional`、`tools → llm`，比较 `max_rounds=1` 和 `max_rounds=3`。
+6. 第二步再自己替换真实 ChatDeepSeek 与 ToolNode，第三步才交给 Trae 接 UI 和 API。
+
+### 学习验收
+
+不是只看“程序跑通”，要能回答：
+
+- 模型不想继续执行与 Harness 强制停止，有什么不同？
+- 为什么最大轮数的 Guard 不能只写在 System Prompt？
+- `tool_requested` 是意图，`rounds` 是由谁更新的？
+- Graph 发生无限循环时，究竟哪一层应该负责停止？
+- 如何为停止原因留下可观察的 trace？
+
+这份调整不改变详细提示词工程的学习计划：**提示词仍然要深入学习；只是核心 Agent 代码不再全部外包给 Trae。**
