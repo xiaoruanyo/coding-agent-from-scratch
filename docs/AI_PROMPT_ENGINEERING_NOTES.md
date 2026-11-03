@@ -248,6 +248,8 @@ Guard / Scheduler：检查是否可以继续、重试、审批或结束
 
 - [Harness 实战：Tool Calling 的真实执行链路与任务提示词设计](HARNESS_TOOL_CALLING_LESSON.md)（教学内容与任务契约已写，产品开发尚未在本课完成）。
 
+- [Harness 可靠性实战：Completion Guard 与过期验证证据](HARNESS_COMPLETION_GUARD_LESSON.md)（课堂进行中，核心手写练习待验收）。
+
 ## 8. 与课堂同步的笔记更新规则
 
 - **课堂讨论**与**仓库文件已更新**分开声明。未实际修改仓库文件，不能说“已更新笔记”。
