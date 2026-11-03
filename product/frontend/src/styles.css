@@ -81,6 +81,7 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid #94afff; outli
 }
 .compose-bottom { display: flex; justify-content: space-between; gap: 14px; align-items: center; margin-top: 13px; }
 .compose-bottom span { font-size: 11px; color: #8291ab; }
+.compose-actions { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
 .primary, .secondary {
   border-radius: 8px; border: 1px solid transparent; font-weight: 680;
   padding: 10px 15px; font-size: 12px; min-width: 108px;
@@ -90,6 +91,22 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid #94afff; outli
 .secondary { color: #d0d9ed; border-color: #44536f; background: #252d42; }
 .secondary:hover:not(:disabled) { background: #343e57; }
 .error-box { border: 1px solid #a54b60; background: #3b202d; color: #ffd8dc; padding: 13px; border-radius: 9px; font-size: 13px; margin-top: 17px; }
+.analysis-card { margin-top: 21px; padding: 21px 23px; }
+.analysis-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; border-bottom: 1px solid #2a3448; padding-bottom: 14px; }
+.analysis-head h2 { font-size: 16px; font-weight: 700; margin: 6px 0 0; }
+.model-badge {
+  font: 11px Consolas, monospace; color: #b7c9f4; background: #1b2337;
+  border: 1px solid #3e4e69; padding: 5px 9px; border-radius: 30px; white-space: nowrap;
+}
+.analysis-text {
+  margin-top: 16px; color: #d5deee; font-size: 12.5px; line-height: 1.8;
+  white-space: pre-wrap; overflow-wrap: anywhere; max-height: 460px; overflow-y: auto;
+}
+.analysis-hint { color: #91a0b8; font-size: 12px; margin: 16px 0 0; }
+.analysis-note {
+  color: #8291ab; font-size: 11px; line-height: 1.7;
+  border-top: 1px solid #2a3448; margin: 16px 0 0; padding-top: 12px;
+}
 .panels { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-top: 21px; align-items: stretch; }
 .panel { min-height: 400px; min-width: 0; }
 .panel-head { padding: 23px 23px 17px; display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #2a3448; }
@@ -147,7 +164,9 @@ footer { margin-top: 26px; color: #71829b; text-align: center; font-size: 11px; 
   .page-header { display: block; }
   .online { display: inline-flex; margin-top: 15px; }
   .compose-bottom { align-items: stretch; flex-direction: column; }
-  .compose-bottom .primary { width: 100%; }
+  .compose-actions { width: 100%; }
+  .compose-actions button { flex: 1; }
+  .analysis-card { padding: 18px; }
   .page-header h1 { font-size: 24px; }
   .panel-head { padding: 18px; }
   .review { padding: 15px; }

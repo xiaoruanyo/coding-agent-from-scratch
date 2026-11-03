@@ -98,3 +98,35 @@ def test_repeating_approval_is_rejected(tmp_path: Path, monkeypatch):
     assert first.status_code == 200
     assert second.status_code == 409
     assert target.read_text(encoding="utf-8") == "return a - b\n"
+
+
+def test_blank_instruction_is_rejected():
+    """只有空白字符的任务描述必须返回 422，不能生成空任务。"""
+    client = TestClient(api.app)
+
+    response = client.post("/api/tasks", json={"instruction": "   \n\t "})
+
+    assert response.status_code == 422
+
+
+def test_instruction_is_trimmed_and_task_created(tmp_path: Path, monkeypatch):
+    """首尾空白会被去除，正常任务描述仍能创建任务。"""
+    monkeypatch.setattr(api, "WORKSPACE", tmp_path)
+    client = TestClient(api.app)
+
+    response = client.post("/api/tasks", json={"instruction": "  修复计算错误  "})
+
+    assert response.status_code == 201
+    assert response.json()["instruction"] == "修复计算错误"
+
+
+def test_instruction_length_limit_is_preserved(tmp_path: Path, monkeypatch):
+    """原有 4000 字符上限保持不变。"""
+    monkeypatch.setattr(api, "WORKSPACE", tmp_path)
+    client = TestClient(api.app)
+
+    accepted = client.post("/api/tasks", json={"instruction": "a" * 4000})
+    rejected = client.post("/api/tasks", json={"instruction": "a" * 4001})
+
+    assert accepted.status_code == 201
+    assert rejected.status_code == 422

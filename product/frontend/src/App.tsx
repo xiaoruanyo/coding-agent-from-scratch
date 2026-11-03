@@ -16,6 +16,7 @@ type Task = {
 };
 type Summary = Pick<Task, "task_id" | "instruction" | "created_at" | "status">;
 type Health = { workspace: string; warning: string; mode: string; status: string };
+type Analysis = { analysis: string; model: string };
 
 const STATUS: Record<Status, string> = {
   RUNNING: "执行中",
@@ -73,6 +74,8 @@ export default function App() {
   const [filter, setFilter] = useState<Filter>("ALL");
   const [task, setTask] = useState<Task | null>(null);
   const [busy, setBusy] = useState(false);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState("");
 
   const currentId = task?.task_id ?? "";
@@ -129,6 +132,30 @@ export default function App() {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function analyze() {
+    const text = instruction.trim();
+    if (analyzing) return;
+    if (!text) {
+      setError("请先输入任务描述，再进行 AI 分析");
+      return;
+    }
+    setAnalyzing(true);
+    setError("");
+    setAnalysis(null);
+    try {
+      setAnalysis(
+        await api<Analysis>("/api/llm/analyze", {
+          method: "POST",
+          body: JSON.stringify({ instruction: text })
+        })
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAnalyzing(false);
     }
   }
 
@@ -229,14 +256,37 @@ export default function App() {
             placeholder="描述你需要修复的代码问题..."
           />
           <div className="compose-bottom">
-            <span>当前使用固定教学 Bug 驱动器，不执行任意模型 Shell。</span>
-            <button className="primary" disabled={busy} onClick={() => void start()}>
-              {busy ? "处理中..." : "开始任务 →"}
-            </button>
+            <span>AI 分析只基于输入文字；开始任务仍使用固定教学 Bug 驱动。</span>
+            <div className="compose-actions">
+              <button className="secondary" disabled={analyzing} onClick={() => void analyze()}>
+                {analyzing ? "AI 分析中..." : "AI 分析"}
+              </button>
+              <button className="primary" disabled={busy} onClick={() => void start()}>
+                {busy ? "处理中..." : "开始任务 →"}
+              </button>
+            </div>
           </div>
         </section>
 
         {error && <div className="error-box" role="alert">操作失败：{error}</div>}
+
+        {(analyzing || analysis) && (
+          <section className="card analysis-card" aria-live="polite" aria-busy={analyzing}>
+            <div className="analysis-head">
+              <div>
+                <span className="eyebrow">REAL LLM ANALYSIS · DEEPSEEK</span>
+                <h2>真实模型分析</h2>
+              </div>
+              <span className="model-badge">{analysis?.model ?? "deepseek-flash"}</span>
+            </div>
+            {analyzing ? (
+              <p className="analysis-hint">正在请求 DeepSeek 分析输入的任务描述...</p>
+            ) : (
+              <div className="analysis-text">{analysis?.analysis}</div>
+            )}
+            <p className="analysis-note">仅根据你输入的文字生成建议，不会读取或修改仓库文件，也不会创建任务、执行命令或运行测试。</p>
+          </section>
+        )}
 
         <div className="panels">
           <section className="card panel">

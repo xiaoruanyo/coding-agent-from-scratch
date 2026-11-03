@@ -17,9 +17,15 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .core import PatchProposal, apply_proposal, make_demo_proposal, run_tests
+from .llm import (
+    MODEL_ID,
+    LLMConfigurationError,
+    LLMInvocationError,
+    analyze_task,
+)
 
 WORKSPACE = Path(__file__).resolve().parents[2] / "sample-workspace"
 app = FastAPI(title="Mini Coding Agent M0", version="0.1.0")
@@ -73,6 +79,26 @@ TERMINAL = {"SUCCEEDED", "FAILED", "REJECTED", "UNVERIFIED"}
 class StartTask(BaseModel):
     instruction: str = Field(min_length=1, max_length=4000)
 
+    @field_validator("instruction")
+    @classmethod
+    def reject_blank_instruction(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("任务描述不能仅包含空白字符")
+        return cleaned
+
+
+class AnalyzeRequest(BaseModel):
+    instruction: str = Field(min_length=1, max_length=4000)
+
+    @field_validator("instruction")
+    @classmethod
+    def reject_blank_instruction(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("任务描述不能仅包含空白字符")
+        return cleaned
+
 
 class ApprovalDecision(BaseModel):
     approved: bool
@@ -95,6 +121,19 @@ def health() -> dict:
         "workspace": str(WORKSPACE.resolve()),
         "warning": "仅用于可信本地示例；当前未接入 LLM，也未提供持久化恢复",
     }
+
+
+@app.post("/api/llm/analyze")
+def analyze_instruction(body: AnalyzeRequest) -> dict:
+    """M1 独立入口：真实调用 DeepSeek 分析任务描述，不触碰 M0 执行流程。"""
+    try:
+        analysis = analyze_task(body.instruction)
+    except LLMConfigurationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except LLMInvocationError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    return {"analysis": analysis, "model": MODEL_ID}
 
 
 @app.get("/api/tasks")
