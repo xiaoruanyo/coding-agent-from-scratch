@@ -4,7 +4,7 @@
 >
 > 定位：与仓库根目录 `CHEATSHEET.md` 分工。速查表只记核心术语和 API；本笔记保留**为什么、怎么提问、正反例、如何验收、什么时候升级为 Rule / Skill / Harness**。
 >
-> 课程主线：Agent 架构和 Harness → Hermes Agent 的原理与扩展 → AI 编程提示词工程。React/FastAPI 是把机制做成可见产品的辅助知识。
+> 课程主线：**Agent 架构 → Harness 工程 → AI 编程提示词工程与评测**。React/FastAPI 只用于把机制做成可见产品；**不以 Hermes Agent 或任何单一框架作为必修主线**。
 
 ## 1. 为什么要系统学习 AI 编程提示词？
 
@@ -161,37 +161,85 @@ FastAPI 空白描述修复：单次 Prompt 描述“纯空白应返回 422，正
 
 迭代方式：记录失败样例 → 定位是需求歧义、工具能力不足、上下文缺失还是执行边界失效 → 只修改相关 Prompt / Rule / Tool → 用原失败样例复测。
 
-## 6. Hermes Agent 学习路线（当前为规划，不标为已完成）
+## 6. Harness 工程：从会调用 Tool 到可靠交付（课程主线，待逐课实践）
 
-这里的 Hermes 指 **Nous Research 的 Hermes Agent**，不是 DeepSeek 的某个模型名称，也不要与之前讨论过的 DSH 直接混为一谈。
+### 6.1 Harness 是什么，为什么不能等同于 Prompt？
 
-按官方资料，Hermes Agent 包含 Agent 执行循环、工具注册与 Toolsets、会话持久化、记忆、Skills、MCP 和执行后端等。其贡献指南特别强调：**能用既有工具 + 指令完成的能力优先做 Skill；需要精确运行逻辑、认证或底层专门处理时才考虑 Tool。**
+我们把 **Harness（Agent 运行与工程约束层）** 定义为：围绕 LLM 的调用、工具执行、上下文构建、状态与会话管理、权限校验、执行控制、可观测性和结果验证等的一组工程机制。
 
-计划的深入课程：
+它不必是某个开源项目，更不等同于 Hermes Agent；也不是简单多加几个 System Prompt。
 
-1. **架构拆解**：用户消息 → prompt 组装 → 模型响应 → tool_calls → 工具派发 → ToolMessage → 下一轮推理；与 LangGraph Loop 对照。
-2. **Tool Registry 与权限**：工具 schema、分组、调度、错误、审批、沙箱边界；与自建 `ToolNode` 对照。
-3. **上下文与会话**：系统提示词、注入内容、会话持久化、上下文压缩；与 Checkpoint / Memory 对照，避免混淆。
-4. **Skills 的生命周期**：发现 → 草拟 → 实测 → 人审 → 版本维护；什么时候不应该自动总结为 Skill。
-5. **MCP / 插件**：如何连接外部系统，如何限定读写权限及校验返回值。
-6. **专业扩展**：从只读元数据与 SelectDB EXPLAIN 分析开始，逐步构建数仓 Agent。任何生产写入先明确权限和审核。
+```text
+用户任务 / 任务契约
+    ↓
+Context Builder：选择规则、历史、代码与必要事实
+    ↓
+LLM：推理，提出工具调用或回答
+    ↓
+Tool Router / Policy：校验 schema、权限、依赖和副作用
+    ↓
+Tool Runner：在硬边界内真正执行，产出可核验的结果
+    ↓
+State / Event / Checkpoint：记录事实和可恢复现场
+    ↓
+Guard / Scheduler：检查是否可以继续、重试、审批或结束
+    ↺ 视实际结果进入下一轮 LLM
+    ↓
+真实测试、交付报告、可观测与评测
+```
 
-> 官方参考（本文件涉及 Hermes 事实以官方文档为准）：
->
-> - https://hermes-agent.nousresearch.com/docs
-> - https://github.com/NousResearch/hermes-agent/blob/main/CONTRIBUTING.md
->
-> Hermes 版本和具体插件 API 可能变化，正式动手前再核对当前文档与安装版本；不要把课程规划视为已验证功能。
+这只是**教学职责图**，并非规定必须有上述名称的类、服务或固定执行顺序。实现可以是简单的 Python 程序，也可以基于 LangGraph 或其他运行时。
+
+### 6.2 Harness 需要学习的六组核心机制
+
+| 机制 | 核心问题 | 在当前 Mini Coding Agent 的具体落点 |
+| --- | --- | --- |
+| Loop / Runtime / 调度 | 谁发起下一轮、何时停止、怎样限制步数？ | LLM → Tool → LLM；终止条件、次数/时限 |
+| Tool Policy / Sandbox | 模型请求能否直接执行？如何保护文件与命令？ | workspace、路径边界、只读/高风险工具审批 |
+| Context Engineering | 哪些代码、消息、规则和事实应放进本轮模型上下文？ | 搜索 → 局部读取 → Working Summary；防过期信息 |
+| State / Event / Persistence | 事实、UI 事件、Checkpoint 和 Memory 各是什么？ | 工具结果同步 State、SSE 展示、恢复线程 |
+| Reliability / Recovery | 失败重试、策略回退、重复副作用和部分失败怎么处理？ | Retry/Loop/Recovery、幂等审批、Completion Guard |
+| Observability / Evals | 怎样知道 Agent 真正更好，而非只会写漂亮总结？ | Tool Call 轨迹、文件 Diff、pytest、费用、回归任务集 |
+
+### 6.3 把三个职责区分开
+
+- **LLM**：选择行动和提出意图，不直接构成文件已修改、测试已通过的证据。
+- **Workflow / LangGraph**：编排节点与状态更新；它可以是 Harness 的核心执行骨架之一，但本身不是完整 Harness。
+- **Harness**：补上工具硬边界、上下文选择、执行与观测、审批、恢复、评测等工程约束；可以集成在相同进程，不代表一定要另起一个系统。
+
+**举例**：模型输出“测试已经通过”，只有实际 pytest 工具的结果与对应代码版本能够支持成功结论。Prompt 写得再好也不能替代这条 Guard。
+
+### 6.4 由简单到复杂的动手课程（每步必须可观察）
+
+1. **工具消息链路**：模型真实提出 `tool_calls`，程序执行受限 `read_file`，产生对应 `ToolMessage`；网页展示请求与实际读取的区别。
+2. **LangGraph Loop**：用 `StateGraph`、`ToolNode`、条件路由管理多轮；前端展示步骤，限制最大次数。
+3. **Tool Policy**：加入路径边界、只读/写入分级与高风险审批；通过故意越界的测试证明拒绝生效。
+4. **Context Builder**：对比全量读取与定向检索，记录相关性、上下文长度、成本和失误。
+5. **State / Event / Checkpoint**：验证断开浏览器与重启后端分别会丢失哪些信息；设计受控恢复和幂等执行。
+6. **完成条件与回归**：让模型在“没有成功测试”时声称完成，验证 Completion Guard 能阻断假成功。
+7. **评测与迭代**：固定几个小型任务，比较 Prompt、工具策略、上下文和模型配置变化对成功率、成本、安全性及延迟的影响。
+
+每个专题都包含：**为什么需要 → 最小反例 → 机制解释 → Trae 实现 → 在产品中观察 → 失败案例 → 验收证据 → 更新学习笔记**。
+
+### 6.5 什么时候研究成熟 Harness 项目？
+
+在我们能独立解释并验证上述核心机制后，再从开放项目中选一个或多个作为**工程对照案例**，评估真实的工具策略、上下文压缩、记忆、权限、执行环境与插件化设计。
+
+比较的重点是**设计取舍与可扩展性**，不是预先宣布某个框架绝对最好。需要时可以研究 Claude Code、Codex、Hermes Agent 或其他项目，但都不是课程的固定毕业目标。
+
+### 6.6 向数仓工作迁移的落地顺序
+
+优先构建受控、只读的数仓工程助手：查询脱敏元数据、阅读 SQL、解释 SelectDB EXPLAIN、整理诊断证据；禁止未经授权的生产写入和不受控命令。通过可复用评测样例验证效果后，再考虑 Skill、MCP 和更高权限操作。
 
 ## 7. 产品可视化驱动的课程安排（更新）
 
-| 阶段 | 核心学习 | 在 Mini Coding Agent / Hermes 中观察到的成果 |
+| 阶段 | 核心学习 | 在 Mini Coding Agent 中观察到的成果 |
 | --- | --- | --- |
 | 当前阶段（已实战） | Trae 工程规则、提示词基础、React 筛选、Pydantic、HTTP/SSE、LangChain 调用 | 网页任务筛选 + 独立 AI 分析区，真实 DeepSeek 接口曾验证成功 |
 | 下一阶段 A | Agent Loop、Tool Calling 消息协议、受控读取与上下文 | 网页展示模型实际读取的文件、工具调用及对应结果 |
 | 下一阶段 B | LangGraph State、路由、Reducer、Checkpoint、审批 | 网页展示多步执行、暂停审批与恢复 |
 | 下一阶段 C | Tool/Harness 安全边界、测试和有限重试 | 能从受控教学代码生成 Diff、审批修改并运行真实 pytest |
-| 并行的 Hermes 专题 | 比较成熟 Harness 与自建运行链路，研究 Skills、Memory、插件 | Hermes 运行一项可审查的只读编程或数仓诊断任务 |
+| 并行的 Harness 工程专题 | 工具策略、上下文、权限、状态、恢复、可观测性和评测 | 给自建 Agent 加入真实的 Guard、证据和诊断视图，并与成熟实现对比 |
 | 进阶实践 | 针对工作流程打磨 Prompt、Rule、Skills 和评测样例 | 形成可复用的 SelectDB 慢 SQL 分析工作流 |
 
 **前后端只讲必要知识**：用 Trae 完成 UI/接口，老师重点解释架构职责、模型行为、工具安全、验证证据；不为了学习框架而不断增加无关页面。
@@ -199,6 +247,6 @@ FastAPI 空白描述修复：单次 Prompt 描述“纯空白应返回 422，正
 ## 8. 与课堂同步的笔记更新规则
 
 - **课堂讨论**与**仓库文件已更新**分开声明。未实际修改仓库文件，不能说“已更新笔记”。
-- 已完成实战的主题可标注“已验证”；尚未运行的工具协议、Hermes 扩展只标“待实践”。
+- 已完成实战的主题可标注“已验证”；尚未运行的工具协议、Harness 扩展只标“待实践”。
 - **详细说明、反例和提示词模板**保留在此文件；`CHEATSHEET.md` 只保留短定义、关键 API 和架构判据。
 - 每完成一个核心实战，新增：业务目标、实际 Prompt、Agent 做出的技术决策、证据与误区、适用范围。
