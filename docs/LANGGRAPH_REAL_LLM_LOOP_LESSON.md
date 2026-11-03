@@ -1,6 +1,6 @@
-# 第 13 课：真实 DeepSeek + LangGraph Agent Loop（课堂笔记）
+# 复习归档：真实 DeepSeek + LangGraph 基础 Agent Loop
 
-> 2026-11-03。课堂正在进行，**代码尚未验证**。核心代码由学习者亲手填写，禁止把模拟结果当真实调用证据。
+> 2026-11-03 课程校准：**这部分属于既有知识复习，不再作为下一节主课**。本页仍保留技术要点供查阅；课堂下一阶段直接进入 Harness 的完成证据与执行可靠性。此前代码尚未运行验证。
 
 ## 本课要解决的问题
 固定的 `LLM → Tool → LLM` 不能动态决定是否继续执行。使用 `StateGraph` 和条件边实现 `llm → tools → llm`，模型通过 `AIMessage.tool_calls` 提出请求，Harness 根据调用次数和权限决定是否执行。
